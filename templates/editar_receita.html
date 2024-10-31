@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+
+{% block title %}Editar Receita{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card bg-dark text-light">
+            <div class="card-header bg-primary text-white">
+                <h2 class="mb-0">Editar Receita</h2>
+            </div>
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data" novalidate>
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="titulo" class="form-label">Título</label>
+                        <input type="text" class="form-control bg-dark text-light" id="titulo" name="titulo" value="{{ receita.titulo }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="descricao" class="form-label">Descrição</label>
+                        <textarea class="form-control bg-dark text-light" id="descricao" name="descricao" rows="3" required>{{ receita.descricao }}</textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="ingredientes" class="form-label">Ingredientes</label>
+                        <textarea class="form-control bg-dark text-light" id="ingredientes" name="ingredientes" rows="5" required>{{ receita.ingredientes }}</textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="modo_preparo" class="form-label">Modo de Preparo</label>
+                        <textarea class="form-control bg-dark text-light" id="modo_preparo" name="modo_preparo" rows="5" required>{{ receita.modo_preparo }}</textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="tempo_preparo" class="form-label">Tempo de Preparo (minutos)</label>
+                        <input type="number" class="form-control bg-dark text-light" id="tempo_preparo" name="tempo_preparo" value="{{ receita.tempo_preparo }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="categoria" class="form-label">Categoria</label>
+                        <select class="form-select bg-dark text-light" id="categoria" name="categoria" required>
+                            {% for valor, nome in categorias %}
+                                <option value="{{ valor }}" {% if receita.categoria == valor %}selected{% endif %}>{{ nome }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="dificuldade" class="form-label">Dificuldade</label>
+                        <select class="form-select bg-dark text-light" id="dificuldade" name="dificuldade" required>
+                            {% for valor, nome in dificuldades %}
+                                <option value="{{ valor }}" {% if receita.dificuldade == valor %}selected{% endif %}>{{ nome }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="imagem" class="form-label">Imagem da Receita</label>
+                        {% if receita.imagem %}
+                            <p>Imagem atual: {{ receita.imagem.name }}</p>
+                        {% endif %}
+                        <input type="file" class="form-control bg-dark text-light" id="imagem" name="imagem">
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-save"></i> Salvar Alterações
+                    </button>
+                    <a href="{% url 'detalhe_receita' receita.id %}" class="btn btn-secondary">
+                        <i class="bi bi-x-circle"></i> Cancelar
+                    </a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

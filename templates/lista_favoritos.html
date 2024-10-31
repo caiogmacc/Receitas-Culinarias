@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block title %}Receitas Favoritas{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <h1 class="display-4">Minhas Receitas Favoritas</h1>
+    </div>
+</div>
+
+{% if receitas %}
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        {% for receita in receitas %}
+            <div class="col">
+                <div class="card h-100 bg-dark text-light border-secondary">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ receita.titulo }}</h5>
+                        <p class="card-text">
+                            <span class="badge bg-primary">{{ receita.get_categoria_display }}</span>
+                            <span class="badge bg-info text-dark">{{ receita.get_dificuldade_display }}</span>
+                            <span class="badge bg-secondary">{{ receita.tempo_preparo }} min</span>
+                        </p>
+                        <a href="{% url 'detalhe_receita' receita.id %}" class="btn btn-outline-light">Ver Detalhes</a>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="alert alert-info" role="alert">
+        <i class="bi bi-info-circle"></i> Você ainda não tem receitas favoritas.
+    </div>
+{% endif %}
+{% endblock %}

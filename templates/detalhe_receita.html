@@ -1,0 +1,169 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="card bg-dark text-light border-secondary shadow-lg w-100">
+    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+        <h1 class="mb-0">{{ receita.titulo }}</h1>
+        {% if user.is_authenticated %}
+        <button id="btn-favorito" class="btn btn-outline-light" data-receita-id="{{ receita.id }}">
+            {% if user in receita.favoritos.all %}
+            <i class="bi bi-heart-fill"></i> Remover dos Favoritos
+            {% else %}
+            <i class="bi bi-heart"></i> Adicionar aos Favoritos
+            {% endif %}
+        </button>
+        {% endif %}
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-8">
+                <p class="mb-2"><strong>Autor:</strong> {{ receita.autor.username }}</p>
+                <p class="mb-2"><strong>Categoria:</strong> {{ receita.get_categoria_display }}</p>
+                <p class="mb-2"><strong>Dificuldade:</strong> {{ receita.get_dificuldade_display }}</p>
+                <p class="mb-2"><strong>Tempo de Preparo:</strong> {{ receita.tempo_preparo }} minutos</p>
+                <p class="mb-4"><strong>Data de Criação:</strong> {{ receita.data_criacao|date:"d/m/Y H:i" }}</p>
+                
+                <h2 class="mb-3">Descrição</h2>
+                <p class="mb-4">{{ receita.descricao }}</p>
+            </div>
+            <div class="col-md-4">
+                {% if receita.imagem %}
+                <figure class="figure shadow-lg p-3 bg-body rounded">
+                    <img src="{{ receita.imagem.url }}" alt="{{ receita.titulo }}" class="figure-img img-fluid rounded" style="max-height: 300px; width: 100%; object-fit: cover;">
+                    <figcaption class="figure-caption text-center text-light">Imagem da receita</figcaption>
+                </figure>
+                {% endif %}
+            </div>
+        </div>
+
+        <h2 class="mb-3">Ingredientes</h2>
+        <pre class="text-light p-3 rounded">{{ receita.ingredientes }}</pre>
+
+        <h2 class="mb-3">Modo de Preparo</h2>
+        <pre class="text-light p-3 rounded">{{ receita.modo_preparo }}</pre>
+
+        <h2 class="mb-3">Adicionar à Lista de Compras</h2>
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit" name="adicionar_lista" class="btn btn-success">
+                <i class="bi bi-cart-plus"></i> Adicionar à Lista de Compras
+            </button>
+        </form>
+
+        <h2 class="mb-3">Avaliações</h2>
+        <p class="mb-2">
+            Média de avaliações: 
+            {% for i in "12345"|make_list %}
+                {% if forloop.counter <= media_avaliacoes %}
+                    <i class="bi bi-star-fill text-warning"></i>
+                {% elif forloop.counter <= media_avaliacoes|add:"0.5" %}
+                    <i class="bi bi-star-half text-warning"></i>
+                {% else %}
+                    <i class="bi bi-star text-warning"></i>
+                {% endif %}
+            {% endfor %}
+            ({{ media_avaliacoes|floatformat:1 }})
+        </p>
+
+        {% if user.is_authenticated %}
+        <form method="post" class="mb-4">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="nota" class="form-label">Sua avaliação:</label>
+                <div class="btn-group" role="group" aria-label="Avaliação em estrelas">
+                    {% for i in "12345"|make_list %}
+                        <input type="radio" class="btn-check" name="nota" id="nota{{ i }}" value="{{ i }}" autocomplete="off" required>
+                        <label class="btn btn-outline-warning" for="nota{{ i }}">
+                            <i class="bi bi-star-fill"></i>
+                        </label>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="comentario" class="form-label">Comentário (opcional):</label>
+                <textarea name="comentario" id="comentario" class="form-control bg-dark text-light" rows="3"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Enviar Avaliação</button>
+        </form>
+        {% else %}
+        <p>Faça login para avaliar esta receita.</p>
+        {% endif %}
+
+        <h3 class="mb-3">Comentários dos usuários</h3>
+        {% for avaliacao in avaliacoes %}
+        <div class="card bg-secondary mb-3">
+            <div class="card-body">
+                <h5 class="card-title">
+                    {{ avaliacao.usuario.username }} - 
+                    {% for i in "12345"|make_list %}
+                        {% if forloop.counter <= avaliacao.nota %}
+                            <i class="bi bi-star-fill text-warning"></i>
+                        {% else %}
+                            <i class="bi bi-star text-warning"></i>
+                        {% endif %}
+                    {% endfor %}
+                </h5>
+                <p class="card-text">{{ avaliacao.comentario }}</p>
+                <small class="text-muted">{{ avaliacao.data_criacao|date:"d/m/Y H:i" }}</small>
+            </div>
+        </div>
+        {% empty %}
+        <p>Nenhuma avaliação ainda. Seja o primeiro a avaliar!</p>
+        {% endfor %}
+
+        <div class="mt-4">
+            <a href="{% url 'lista_receitas' %}" class="btn btn-primary me-2">
+                <i class="bi bi-arrow-left"></i> Voltar para a lista de receitas
+            </a>
+            {% if user == receita.autor %}
+            <a href="{% url 'editar_receita' receita.id %}" class="btn btn-warning me-2">
+                <i class="bi bi-pencil"></i> Editar
+            </a>
+            <a href="{% url 'excluir_receita' receita.id %}" class="btn btn-danger">
+                <i class="bi bi-trash"></i> Excluir
+            </a>
+            {% endif %}
+        </div>
+
+        <div class="mt-4">
+            <h3>Compartilhar:</h3>
+            <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri }}" target="_blank" class="btn btn-primary">
+                <i class="bi bi-facebook"></i> Facebook
+            </a>
+            <a href="https://twitter.com/intent/tweet?url={{ request.build_absolute_uri }}&text={{ receita.titulo }}" target="_blank" class="btn btn-info">
+                <i class="bi bi-twitter"></i> Twitter
+            </a>
+            <a href="https://www.instagram.com/" target="_blank" class="btn btn-danger">
+                <i class="bi bi-instagram"></i> Instagram
+            </a>
+        </div>
+
+        <div class="mt-4">
+            <a href="{% url 'adicionar_receita_colecao' receita.id %}" class="btn btn-success">
+                <i class="bi bi-folder-plus"></i> Adicionar à Coleção
+            </a>
+        </div>
+
+        <script>
+        document.getElementById('btn-favorito').addEventListener('click', function() {
+            const receitaId = this.dataset.receitaId;
+            fetch(`/toggle-favorito/${receitaId}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                    'Content-Type': 'application/json',
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.is_favorito) {
+                    this.innerHTML = '<i class="bi bi-heart-fill"></i> Remover dos Favoritos';
+                } else {
+                    this.innerHTML = '<i class="bi bi-heart"></i> Adicionar aos Favoritos';
+                }
+            });
+        });
+        </script>
+
+{% endblock %}

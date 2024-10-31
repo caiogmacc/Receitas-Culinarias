@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block title %}Adicionar Receita à Coleção{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Adicionar Receita à Coleção</h2>
+    <form method="post">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="colecao" class="form-label">Escolha uma Coleção</label>
+            <select class="form-select" id="colecao" name="colecao" required>
+                {% for colecao in colecoes %}
+                <option value="{{ colecao.id }}">{{ colecao.nome }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Adicionar à Coleção</button>
+    </form>
+</div>
+{% endblock %}

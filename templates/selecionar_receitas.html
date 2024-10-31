@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Selecione as receitas para a lista de compras</h2>
+<form method="post" action="{% url 'gerar_lista_compras' %}">
+    {% csrf_token %}
+    {% for receita in receitas %}
+    <div class="form-check">
+        <input class="form-check-input" type="checkbox" name="receitas" value="{{ receita.id }}" id="receita{{ receita.id }}">
+        <label class="form-check-label" for="receita{{ receita.id }}">
+            {{ receita.titulo }}
+        </label>
+    </div>
+    {% endfor %}
+    <button type="submit" class="btn btn-primary mt-3">Gerar Lista de Compras</button>
+</form>
+{% endblock %}

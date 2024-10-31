@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block title %}Verificar Código{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center align-items-center" style="min-height: 80vh;">
+    <div class="col-md-8 col-lg-6">
+        <div class="card bg-dark text-light border-secondary shadow-lg">
+            <div class="card-header bg-primary text-white py-3">
+                <h2 class="mb-0 text-center">Verificar Código</h2>
+            </div>
+            <div class="card-body p-5">
+                <form method="post" novalidate>
+                    {% csrf_token %}
+                    <div class="mb-4">
+                        <label for="codigo" class="form-label fs-5">Digite o código de verificação:</label>
+                        <input type="text" name="codigo" class="form-control" required>
+                        <input type="hidden" name="email" value="{{ email }}">
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100 py-2 mt-3 fs-5">
+                        <i class="bi bi-check-circle me-2"></i> Verificar Código
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

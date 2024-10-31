@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block title %}Minhas Coleções{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Minhas Coleções</h2>
+    <a href="{% url 'criar_colecao' %}" class="btn btn-primary mb-3">Criar Nova Coleção</a>
+    <div class="row">
+        {% for colecao in colecoes %}
+        <div class="col-md-4 mb-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">{{ colecao.nome }}</h5>
+                    <p class="card-text">{{ colecao.receitas.count }} receitas</p>
+                    <a href="{% url 'detalhe_colecao' colecao.id %}" class="btn btn-info">Ver Detalhes</a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <p>Você ainda não tem coleções. Crie uma agora!</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

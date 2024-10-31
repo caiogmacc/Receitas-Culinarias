@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ colecao.nome }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>{{ colecao.nome }}</h2>
+    <p>Total de receitas: {{ colecao.receitas.count }}</p>
+    <div class="row">
+        {% for receita in colecao.receitas.all %}
+        <div class="col-md-4 mb-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">{{ receita.titulo }}</h5>
+                    <a href="{% url 'detalhe_receita' receita.id %}" class="btn btn-info">Ver Receita</a>
+                    <form method="post" action="{% url 'remover_receita_colecao' colecao.id receita.id %}" class="d-inline">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger">Remover da Coleção</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <p>Esta coleção ainda não tem receitas.</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
